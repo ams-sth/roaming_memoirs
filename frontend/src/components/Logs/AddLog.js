@@ -58,7 +58,7 @@ const AddLog = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="mt-[2rem] min-h-screen flex items-center justify-center bg-gray-50">
       <div className="max-w-md w-full p-6 bg-white shadow-lg rounded-lg">
         <h2 className="text-3xl font-bold mb-4 text-indigo-600">
           Add New Trip

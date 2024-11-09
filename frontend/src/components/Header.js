@@ -15,63 +15,55 @@ const Header = ({ isAuthenticated, user }) => {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 bg-white border ">
-      <div className="container mx-auto p-4 flex items-center justify-between">
-        {/* User Authentication */}
-        <div className="ml-auto text-center">
-          {isAuthenticated ? (
-            <>
-              <div className="mb-4">
-                <Link
-                  to="/"
-                  className="text-2xl text-black"
-                >
-                  Travel Log
-                </Link>
-              </div>
+    <nav className="bg-white shadow-lg fixed top-0 w-full py-[0.5rem]">
+      {/* User Authentication */}
+      {isAuthenticated ? (
+        <div className="flex flex-row items-center justify-between px-[3rem]">
+          <Link to="/" className="text-2xl text-black">
+            Travel Log
+          </Link>
 
-              <div className="flex flex-col space-y-2 mb-4">
-                <div className="flex items-center space-x-3">
-                  <NavLink
-                    to="/all/logs"
-                    className="text-yellow-500 hover:text-white"
-                    activeClassName="text-white"
-                  >
-                    All Logs
-                  </NavLink>
-                  <NavLink
-                    to="/add/logs"
-                    className=" text-yellow-500 hover:text-white"
-                    activeClassName="text-white"
-                  >
-                    Add Log
-                  </NavLink>
-                </div>
-              </div>
-              <div className="flex items-center space-x-3 justify-center">
-                <Link to="/" className="text-white hover:underline">
-                  {user?.username}
-                </Link>
-                <button
-                  onClick={handleLogout}
-                  className="btn btn-danger btn-sm"
-                >
-                  Logout
-                </button>
-              </div>
-            </>
-          ) : (
-            <div className="space-x-3">
-              <Link to="/login" className="btn btn-primary btn-sm">
-                Login
-              </Link>
-              <Link to="/register" className="btn btn-success btn-sm">
-                Signup
-              </Link>
-            </div>
-          )}
+          <div className="flex gap-3">
+            <NavLink
+              to="/all/logs"
+              className="text-yellow-500 hover:text-orange-500"
+              activeClassName="text-white"
+            >
+              All Logs
+            </NavLink>
+            <NavLink
+              to="/add/logs"
+              className=" text-yellow-500 hover:text-orange-500"
+              activeClassName="text-white"
+            >
+              Add Log
+            </NavLink>
+          </div>
+          <div className="flex items-center space-x-3 justify-center">
+            <Link to="/" className="text-white hover:underline">
+              {user?.username}
+            </Link>
+            <button onClick={handleLogout} className="btn btn-danger btn-sm">
+              Logout
+            </button>
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="px-[3rem] flex justify-end space-x-3">
+          <Link
+            to="/login"
+            className="bg-red-500 px-[1rem] py-[.5em] rounded-xl text-white hover:scale-105 duration-300"
+          >
+            Login
+          </Link>
+          <Link
+            to="/register"
+            className="bg-blue-500 px-[1rem] py-[.5em] rounded-xl text-white hover:scale-105 duration-300"
+          >
+            Signup
+          </Link>
+        </div>
+      )}
     </nav>
   );
 };
