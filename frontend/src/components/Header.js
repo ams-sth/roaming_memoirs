@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -14,6 +14,21 @@ const Header = ({ isAuthenticated, user }) => {
     toast.success("Logout Successfully!");
   };
 
+  const [activeState, setActiveState] = useState("addLogs");
+
+  const handleActiveState = (parameter) => {
+    setActiveState(parameter);
+
+    localStorage.setItem("activeState", parameter);
+  };
+
+  useEffect(() => {
+    const storedState = localStorage.getItem("activeState");
+    if (storedState) {
+      setActiveState(storedState);
+    }
+  }, []);
+
   return (
     <nav className="bg-white shadow-lg fixed top-0 w-full py-[0.5rem] flex items-center justify-between">
       {/* User Authentication */}
@@ -24,16 +39,26 @@ const Header = ({ isAuthenticated, user }) => {
         <div className="flex flex-row items-center justify-between px-[3rem]">
           <div className="flex gap-3">
             <NavLink
+              id="allLogs"
+              onClick={() => handleActiveState("allLogs")}
               to="/all/logs"
-              className="text-yellow-500 hover:text-orange-500"
-              activeClassName="text-white"
+              className={
+                activeState === "allLogs"
+                  ? "text-orange-500 font-bold"
+                  : " text-black font-semibold"
+              }
             >
-              All Logs
+              View Logs
             </NavLink>
             <NavLink
+              id="addLogs"
+              onClick={() => handleActiveState("addLogs")}
               to="/add/logs"
-              className=" text-yellow-500 hover:text-orange-500"
-              activeClassName="text-white"
+              className={
+                activeState === "addLogs"
+                  ? "text-orange-500 font-bold"
+                  : " text-black font-semibold"
+              }
             >
               Add Log
             </NavLink>
@@ -42,7 +67,10 @@ const Header = ({ isAuthenticated, user }) => {
             <Link to="/" className="text-white hover:underline">
               {user?.username}
             </Link>
-            <button onClick={handleLogout} className="btn btn-danger btn-sm">
+            <button
+              onClick={handleLogout}
+              className="bg-red-500 px-[1rem] py-[.5rem] rounded-xl text-white hover:scale-105 duration-300"
+            >
               Logout
             </button>
           </div>
@@ -51,7 +79,7 @@ const Header = ({ isAuthenticated, user }) => {
         <div className="px-[3rem] flex justify-end space-x-3">
           <Link
             to="/login"
-            className="bg-red-500 px-[1rem] py-[.5em] rounded-xl text-white hover:scale-105 duration-300"
+            className="bg-green-500 px-[1rem] py-[.5em] rounded-xl text-white hover:scale-105 duration-300"
           >
             Login
           </Link>

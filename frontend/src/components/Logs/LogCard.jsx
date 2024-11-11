@@ -1,4 +1,5 @@
 import React from "react";
+import { MdDelete, MdEdit } from "react-icons/md";
 
 const LogCard = ({ log }) => {
   return (
@@ -7,9 +8,14 @@ const LogCard = ({ log }) => {
         <img
           src={`http://localhost:5000/uploads/${log.logImage}`}
           alt="Card"
-          className="w-full object-cover border-gray-300"
+          className=" object-cover border-gray-300"
         />
-        <div className="p-4">
+
+        <div className="flex gap-3 justify-end">
+          <MdEdit size={24} />
+          <MdDelete size={24} />
+        </div>
+        <div className="px-4">
           <h2 className="text-xl font-semibold">
             Name your trip : {log.tripName}
           </h2>
