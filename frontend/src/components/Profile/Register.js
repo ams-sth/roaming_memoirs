@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { clearError, register } from "../../redux/features/authSlice";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const Register = () => {
   const { loading, error } = useSelector((state) => state.auth);
@@ -45,10 +46,21 @@ const Register = () => {
     }
   }, [dispatch, error]);
 
+  const [showpassword, setShowpassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const togglePassword = () => {
+    setShowpassword(!showpassword);
+  };
+
+  const toggleConfirmPassword = () => {
+    setShowConfirmPassword(!showConfirmPassword);
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="max-w-md w-full p-6 bg-white shadow-lg rounded-lg">
-        <h2 className="text-2xl font-semibold mb-4">Register</h2>
+        <h2 className="text-2xl font-semibold mb-4">Create Your Account</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label
@@ -89,14 +101,21 @@ const Register = () => {
             >
               Password
             </label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              className="w-full px-4 py-2 border rounded-md focus:ring focus:ring-indigo-300"
-              value={password}
-              onChange={handleChange}
-            />
+            <div className="flex flex-row gap-3 items-center">
+              <input
+                type={showpassword ? "text" : "password"}
+                id="password"
+                name="password"
+                className="w-full px-4 py-2 border rounded-md focus:ring focus:ring-indigo-300"
+                value={password}
+                onChange={handleChange}
+              />
+              {showpassword ? (
+                <FaEyeSlash onClick={() => togglePassword("password")} />
+              ) : (
+                <FaEye onClick={() => togglePassword("password")} />
+              )}
+            </div>
           </div>
           <div className="mb-4">
             <label
@@ -105,14 +124,21 @@ const Register = () => {
             >
               Confirm Password
             </label>
-            <input
-              type="password"
-              id="confirmPassword"
-              name="confirmPassword"
-              className="w-full px-4 py-2 border rounded-md focus:ring focus:ring-indigo-300"
-              value={confirmPassword}
-              onChange={handleChange}
-            />
+            <div className="flex flex-row gap-3 items-center">
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                id="confirmPassword"
+                name="confirmPassword"
+                className="w-full px-4 py-2 border rounded-md focus:ring focus:ring-indigo-300"
+                value={confirmPassword}
+                onChange={handleChange}
+              />
+              {showConfirmPassword ? (
+                <FaEyeSlash onClick={toggleConfirmPassword} />
+              ) : (
+                <FaEye onClick={toggleConfirmPassword} />
+              )}
+            </div>
           </div>
           <button
             type="submit"

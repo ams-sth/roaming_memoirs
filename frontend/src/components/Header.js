@@ -15,14 +15,13 @@ const Header = ({ isAuthenticated, user }) => {
   };
 
   return (
-    <nav className="bg-white shadow-lg fixed top-0 w-full py-[0.5rem]">
+    <nav className="bg-white shadow-lg fixed top-0 w-full py-[0.5rem] flex items-center justify-between">
       {/* User Authentication */}
+      <Link to="/" className="px-[3rem] text-2xl text-black">
+        Roaming Memoirs
+      </Link>
       {isAuthenticated ? (
         <div className="flex flex-row items-center justify-between px-[3rem]">
-          <Link to="/" className="text-2xl text-black">
-            Travel Log
-          </Link>
-
           <div className="flex gap-3">
             <NavLink
               to="/all/logs"
