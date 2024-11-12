@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import * as api from "../apiRoute/api";
+import axios from "axios";
 
 //actions
 export const logsAdd = createAsyncThunk(
@@ -24,6 +25,21 @@ export const allLogs = createAsyncThunk(
       return res.data;
     } catch (error) {
       return rejectWithValue(error.res.data);
+    }
+  }
+);
+
+export const updateLogs = createAsyncThunk(
+  "/currentLog/update",
+  async ({userId, updateData}, { rejectWithValue }) => {
+    try {
+      const response = await axios.put(
+        `http://localhost:5000/api/v1/logs/${userId}`,
+        updateData
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
     }
   }
 );

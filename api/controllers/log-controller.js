@@ -50,21 +50,28 @@ exports.addLogs = async (req, res, next) => {
 };
 
 exports.updateLogs = async (req, res) => {
-  const { id } = req.params;
-  const { tripName, description, location, date } = req.body;
+  const { id } = req.params;  // Get the ID from URL params
+  const { tripName, description, location, date } = req.body;  // Get the updated values from the request body
+
   try {
+    // Find the log by ID
     const existingLogs = await Log.findById(id);
 
+    // If the log doesn't exist, return an error response
     if (!existingLogs) {
-      return res.status(404).json({ message: "No such Logs exists" });
+      return res.status(404).json({ message: "No such logs exist" });
     }
-    existingLog.tripName = tripName || existingLog.tripName;
-    existingLog.description = description || existingLog.description;
-    existingLog.location = location || existingLog.location;
-    existingLog.date = date || existingLog.date;
 
-    await existingLog.save();
+    // Update fields only if the new values are provided
+    existingLogs.tripName = tripName || existingLogs.tripName;
+    existingLogs.description = description || existingLogs.description;
+    existingLogs.location = location || existingLogs.location;
+    existingLogs.date = date || existingLogs.date;
 
+    // Save the updated log
+    await existingLogs.save();
+
+    // Return success response with updated data
     res.status(200).json({
       success: true,
       message: "Logs updated successfully",
@@ -72,9 +79,11 @@ exports.updateLogs = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
+    // Return error response in case of an exception
     res.status(500).json({ message: error.message });
   }
 };
+
 
 // exports.deleteLog = async (req, res, next) => {
 //   try {
