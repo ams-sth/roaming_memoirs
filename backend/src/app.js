@@ -1,42 +1,52 @@
+// Importing required modules
 const express = require("express");
 const morgan = require("morgan");
-const colors = require("colors");
 const dotenv = require("dotenv");
 const cors = require("cors");
+
+// Importing routes and middlewares
 const user_routes = require("./routes/user-routes");
 const log_routes = require("./routes/log-routes");
 const upload = require("./middlewares/upload");
 
-//config
+// Configuring dotenv
 dotenv.config();
 
+// Initialize the express application
 const app = express();
 
-app.use(express.json());
-app.use(cors());
-app.use(morgan("dev"));
+// Middleware setup
+app.use(express.json());   // Middleware to parse JSON
+app.use(cors());           // Enable CORS for cross-origin requests
+app.use(morgan("dev"));    // HTTP request logger
 
-app.use("/api/v1", user_routes);
-app.use("/api/v1/", log_routes);
-
-// app.use(express.static('public'))
+// Static file serving
 app.use("/uploads", express.static("public/uploads"));
 
-app.get("/", (res) => {
+// Routes setup
+app.use("/api/v1", user_routes);  // User-related routes
+app.use("/api/v1", log_routes);   // Log-related routes
+
+// Simple route for testing server
+app.get("/", (req, res) => {
   res.send("Server is working!");
 });
 
+// Route for handling image uploads
 app.post("/images", upload.single("photo"), (req, res) => {
-  console.log(req.filename);
-  res.json(req.filename);
+  console.log(req.file);  // Log the uploaded file details
+  res.json(req.file);     // Respond with the file details
 });
 
+// Route for handling video uploads
 app.post("/videos", upload.single("video"), (req, res) => {
-  res.json(req.file);
+  res.json(req.file);  // Respond with the uploaded video file details
 });
 
-app.use("/", (req, res) => {
-  res.send("<h1>Server is working</h1>");
+// Handling 404 errors for undefined routes
+app.use((req, res) => {
+  res.status(404).send("<h1>Route not found</h1>");
 });
 
+// Export the app for use in other parts of the application
 module.exports = app;
