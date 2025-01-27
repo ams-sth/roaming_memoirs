@@ -5,10 +5,10 @@ const {
   getProfile,
 } = require("../controllers/user-controller");
 const { isAuth } = require("../middlewares/auth");
-const router = express.Router();
+const UserRoutes = express.Router();
 
-router.post("/register", register);
-router.post("/login", login);
-router.get("/me", isAuth, getProfile);
+UserRoutes.post("/register", register);
+UserRoutes.post("/login", login);
+UserRoutes.get("/me", isAuth, getProfile);
 
-module.exports = router;
+module.exports = UserRoutes;
