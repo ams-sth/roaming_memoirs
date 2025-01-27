@@ -5,8 +5,8 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 
 // Importing routes and middlewares
-const user_routes = require("./routes/user-routes");
-const log_routes = require("./routes/log-routes");
+const UserRoutes = require("./routes/user-routes");
+const LogRoutes = require("./routes/log-routes");
 const upload = require("./middlewares/upload");
 
 // Configuring dotenv
@@ -24,8 +24,8 @@ app.use(morgan("dev"));    // HTTP request logger
 app.use("/uploads", express.static("public/uploads"));
 
 // Routes setup
-app.use("/api/v1", user_routes);  // User-related routes
-app.use("/api/v1", log_routes);   // Log-related routes
+app.use("/api/v1", UserRoutes);  // User-related routes
+app.use("/api/v1", LogRoutes);   // Log-related routes
 
 // Simple route for testing server
 app.get("/", (req, res) => {
