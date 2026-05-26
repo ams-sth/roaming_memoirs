@@ -1,123 +1,97 @@
-const Log = require("../models/Log");
+const supabase = require("../config/supabase");
 
-// Get all logs for a specific user
-exports.getAllLogs = async (req, res, next) => {
+// Map snake_case DB columns → camelCase so the frontend stays unchanged
+const mapLog = (log) => ({
+  _id: log.id,
+  id: log.id,
+  tripName: log.trip_name,
+  description: log.description,
+  location: log.location,
+  date: log.date,
+  logImage: log.log_image,
+  user: log.user_id,
+  createdAt: log.created_at,
+});
+
+// Get all logs for the authenticated user
+exports.getAllLogs = async (req, res) => {
   try {
-    // Ensure the user is authenticated
-    if (!req.user || !req.user.id) {
-      return res.status(401).json({ error: "User not authenticated" });
-    }
+    const { data: logs, error } = await supabase
+      .from("logs")
+      .select("*")
+      .eq("user_id", req.user.id)
+      .order("created_at", { ascending: false });
 
-    // Get the authenticated user's ID
-    const userId = req.user.id;
+    if (error) return res.status(500).json({ success: false, message: error.message });
 
-    // Fetch logs for the user and populate the 'user' field with the 'email' attribute
-    let logs = await Log.find({ user: userId }).populate("user", "email");
-
-    // If no logs are found, respond with a 404 error
-    if (!logs || logs.length === 0) {
-      return res.status(404).json({ error: "Logs not found for the user" });
-    }
-
-    // Respond with the logs
-    res.status(200).json({ success: true, data: logs });
-  } catch (err) {
-    // Pass any errors to the next middleware
-    next(err);
+    return res.status(200).json({ success: true, data: logs.map(mapLog) });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
 
 // Add a new log
-exports.addLogs = async (req, res, next) => {
+exports.addLogs = async (req, res) => {
   try {
-    // Extract log details from the request body
     const { tripName, description, location, date } = req.body;
 
-    // Ensure all required fields are provided
     if (!tripName || !description || !location || !date) {
-      return res.status(400).json({
-        success: false,
-        message: "Please enter all fields!",
-      });
+      return res.status(400).json({ success: false, message: "Please enter all fields!" });
     }
 
-    // Get the uploaded file name if it exists
     const logImage = req.file ? req.file.originalname : null;
 
-    // Create a new log in the database
-    const log = await Log.create({
-      tripName,
-      description,
-      location,
-      date,
-      logImage,
-      user: req.user.id, // Associate the log with the authenticated user
-    });
+    const { data: log, error } = await supabase
+      .from("logs")
+      .insert({
+        trip_name: tripName,
+        description,
+        location,
+        date,
+        log_image: logImage,
+        user_id: req.user.id,
+      })
+      .select()
+      .single();
 
-    // Respond with the created log
-    res.status(201).json({
+    if (error) return res.status(500).json({ success: false, message: error.message });
+
+    return res.status(201).json({
       success: true,
       message: "Log added successfully!",
-      data: log,
+      data: mapLog(log),
     });
   } catch (error) {
-    // Pass any errors to the next middleware
-    next(error);
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
 
 // Update an existing log
 exports.updateLogs = async (req, res) => {
-  const { id } = req.params; // Extract the log ID from the URL parameters
-  const { tripName, description, location, date } = req.body; // Extract the updated values from the request body
-
   try {
-    // Find the log by its ID
-    const existingLogs = await Log.findById(id);
+    const { userId: id } = req.params;
+    const { tripName, description, location, date } = req.body;
 
-    // If the log does not exist, respond with a 404 error
-    if (!existingLogs) {
-      return res.status(404).json({ message: "No such logs exist" });
-    }
+    const { data: log, error } = await supabase
+      .from("logs")
+      .update({
+        ...(tripName && { trip_name: tripName }),
+        ...(description && { description }),
+        ...(location && { location }),
+        ...(date && { date }),
+      })
+      .eq("id", id)
+      .select()
+      .single();
 
-    // Update the fields only if new values are provided
-    existingLogs.tripName = tripName || existingLogs.tripName;
-    existingLogs.description = description || existingLogs.description;
-    existingLogs.location = location || existingLogs.location;
-    existingLogs.date = date || existingLogs.date;
+    if (error) return res.status(500).json({ success: false, message: error.message });
 
-    // Save the updated log to the database
-    await existingLogs.save();
-
-    // Respond with the updated log
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
-      message: "Logs updated successfully",
-      data: existingLogs,
+      message: "Log updated successfully!",
+      data: mapLog(log),
     });
   } catch (error) {
-    console.error(error);
-    // Respond with a 500 error in case of an exception
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
-
-// Delete a log (commented out)
-// exports.deleteLog = async (req, res, next) => {
-//   try {
-//     const id = req.params.id; // Get the log ID from the URL parameters
-//     const deletedLog = await Log.findByIdAndRemove(id); // Remove the log by its ID
-
-//     // If the log does not exist, respond with a 404 error
-//     if (!deletedLog) {
-//       return res.status(404).json({ message: "Unable to delete" });
-//     }
-
-//     // Respond with a success message
-//     res.status(200).json({ message: "Successfully deleted" });
-//   } catch (error) {
-//     console.error(error);
-//     // Respond with a 500 error in case of an exception
-//     res.status(500).json({ message: error.message });
-//   }
-// };

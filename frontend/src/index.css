@@ -1,3 +1,21 @@
-@import 'tailwindcss/base';
-@import 'tailwindcss/components';
-@import 'tailwindcss/utilities';
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+body {
+    font-family: "Inter", sans-serif;
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+}
+::-webkit-scrollbar-track {
+    background: #f5f0eb;
+}
+::-webkit-scrollbar-thumb {
+    background: #c4a882;
+    border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #a0855a;
+}

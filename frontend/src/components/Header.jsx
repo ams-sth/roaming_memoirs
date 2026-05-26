@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { setLogout } from "../redux/features/authSlice";
+import { setLogout } from "../features/auth/authSlice";
 
 const Header = ({ isAuthenticated, user }) => {
   const dispatch = useDispatch();
@@ -11,86 +10,55 @@ const Header = ({ isAuthenticated, user }) => {
   const handleLogout = () => {
     dispatch(setLogout());
     navigate("/");
-    toast.success("Logout Successfully!");
+    toast.success("Logged out successfully!");
   };
 
-  const [activeState, setActiveState] = useState("addLogs");
-
-  const handleActiveState = (parameter) => {
-    setActiveState(parameter);
-
-    localStorage.setItem("activeState", parameter);
-  };
-
-  useEffect(() => {
-    const storedState = localStorage.getItem("activeState");
-    if (storedState) {
-      setActiveState(storedState);
-    }
-  }, []);
+  const navLinkClass = ({ isActive }) =>
+    isActive
+      ? "text-amber-500 font-semibold text-sm"
+      : "text-stone-600 hover:text-amber-500 font-medium text-sm transition-colors duration-200";
 
   return (
-    <nav className="bg-white shadow-lg fixed top-0 w-full py-[0.5rem] flex items-center justify-between">
-      {/* User Authentication */}
-      <Link to="/" className="px-[3rem] text-2xl text-black">
-        Roaming Memoirs
-      </Link>
-      {isAuthenticated ? (
-        <div className="flex flex-row items-center justify-between px-[3rem]">
-          <div className="flex gap-3">
-            <NavLink
-              id="allLogs"
-              onClick={() => handleActiveState("allLogs")}
-              to="/all/logs"
-              className={
-                activeState === "allLogs"
-                  ? "text-orange-500 font-bold"
-                  : " text-black font-semibold"
-              }
-            >
-              View Logs
-            </NavLink>
-            <NavLink
-              id="addLogs"
-              onClick={() => handleActiveState("addLogs")}
-              to="/add/logs"
-              className={
-                activeState === "addLogs"
-                  ? "text-orange-500 font-bold"
-                  : " text-black font-semibold"
-              }
-            >
-              Add Log
-            </NavLink>
+    <nav className="bg-white/95 backdrop-blur-sm border-b border-stone-200 shadow-sm fixed top-0 w-full z-50">
+      <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+        <Link
+          to="/"
+          className="font-serif text-2xl font-bold text-stone-800 tracking-tight hover:text-amber-600 transition-colors duration-200"
+        >
+          Roaming Memoirs
+        </Link>
+
+        {isAuthenticated ? (
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-5">
+              <NavLink to="/all/logs" className={navLinkClass}>My Logs</NavLink>
+              <NavLink to="/add/logs" className={navLinkClass}>Add Trip</NavLink>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="text-stone-500 text-sm font-medium hidden sm:block">
+                {user?.username}
+              </span>
+              <button
+                onClick={handleLogout}
+                className="bg-stone-800 hover:bg-stone-700 text-white text-sm font-medium px-4 py-2 rounded-full transition-all duration-200 hover:shadow-md"
+              >
+                Logout
+              </button>
+            </div>
           </div>
-          <div className="flex items-center space-x-3 justify-center">
-            <Link to="/" className="text-white hover:underline">
-              {user?.username}
+        ) : (
+          <div className="flex items-center gap-3">
+            <Link to="/login"
+              className="text-stone-700 hover:text-amber-600 font-medium text-sm transition-colors duration-200">
+              Sign In
             </Link>
-            <button
-              onClick={handleLogout}
-              className="bg-red-500 px-[1rem] py-[.5rem] rounded-xl text-white hover:scale-105 duration-300"
-            >
-              Logout
-            </button>
+            <Link to="/register"
+              className="bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold px-4 py-2 rounded-full transition-all duration-200 hover:shadow-md">
+              Get Started
+            </Link>
           </div>
-        </div>
-      ) : (
-        <div className="px-[3rem] flex justify-end space-x-3">
-          <Link
-            to="/login"
-            className="bg-green-500 px-[1rem] py-[.5em] rounded-xl text-white hover:scale-105 duration-300"
-          >
-            Login
-          </Link>
-          <Link
-            to="/register"
-            className="bg-blue-500 px-[1rem] py-[.5em] rounded-xl text-white hover:scale-105 duration-300"
-          >
-            Signup
-          </Link>
-        </div>
-      )}
+        )}
+      </div>
     </nav>
   );
 };

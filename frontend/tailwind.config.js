@@ -12,7 +12,12 @@ export default {
       center: true,
       padding: "0.1rem",
     },
-    extend: {},
+    extend: {
+      fontFamily: {
+        sans: ["Inter", "sans-serif"],
+        serif: ["Playfair Display", "serif"],
+      },
+    },
   },
   plugins: [],
 };

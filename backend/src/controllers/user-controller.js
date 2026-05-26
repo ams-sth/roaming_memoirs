@@ -1,21 +1,14 @@
-const Log = require("../models/Log");
-const User = require("../models/User");
+const supabase = require("../config/supabase");
 
-// Register API
+// Register
 exports.register = async (req, res) => {
   try {
-    // Destructure user details from the request body
     const { username, email, password } = req.body;
 
-    // Validate if all required fields are provided
     if (!username || !email || !password) {
-      return res.status(400).json({
-        success: false,
-        message: "Please enter all fields",
-      });
+      return res.status(400).json({ success: false, message: "Please enter all fields" });
     }
 
-    // Validate password complexity using a regex pattern
     const passwordRegex =
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
     if (!passwordRegex.test(password)) {
@@ -26,120 +19,97 @@ exports.register = async (req, res) => {
       });
     }
 
-    // Check if an account with the given email already exists
-    const exist = await User.findOne({ email });
-    if (exist) {
-      return res.status(400).json({
-        success: false,
-        message: "Email already exists!",
-      });
-    }
-
-    // Create a new user and save it to the database
-    const user = await User.create({
-      username,
+    // Create user via Supabase Auth admin (auto-confirms email)
+    const { data, error } = await supabase.auth.admin.createUser({
       email,
       password,
+      email_confirm: true,
     });
 
-    // Respond with a success message and the created user
+    if (error) {
+      return res.status(400).json({ success: false, message: error.message });
+    }
+
+    // Store username in profiles table
+    const { error: profileError } = await supabase
+      .from("profiles")
+      .insert({ id: data.user.id, username, role: "user" });
+
+    if (profileError) {
+      return res.status(500).json({ success: false, message: profileError.message });
+    }
+
     return res.status(201).json({
       success: true,
-      message: "User added successfully!",
-      user,
+      message: "User registered successfully!",
+      user: { id: data.user.id, email: data.user.email, username },
     });
   } catch (error) {
-    // Handle any server errors
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
 
-// Login API
+// Login
 exports.login = async (req, res) => {
   try {
-    // Extract login credentials from the request body
     const { email, password } = req.body;
 
-    // Validate if all required fields are provided
     if (!email || !password) {
-      return res.status(400).json({
-        success: false,
-        message: "Please enter all fields!",
-      });
+      return res.status(400).json({ success: false, message: "Please enter all fields!" });
     }
 
-    // Check if the user exists in the database
-    const user = await User.findOne({ email }).select("+password");
-    if (!user) {
-      return res.status(400).json({
-        success: false,
-        message: "Email doesn't exist!",
-      });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+    if (error) {
+      return res.status(400).json({ success: false, message: error.message });
     }
 
-    // (Optional) Check if the user has reached the maximum login attempts
-    // Uncomment and implement logic for tracking login attempts if needed
-    // if (user.loginAttempts >= 5) {
-    //   return res.status(401).json({
-    //     success: false,
-    //     message: "Maximum login attempts reached. Your account is locked.",
-    //   });
-    // }
+    // Fetch username from profiles
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("username, role")
+      .eq("id", data.user.id)
+      .single();
 
-    // Compare the provided password with the stored hashed password
-    const matchPassword = await user.comparePassword(password);
-    if (!matchPassword) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid credentials!",
-      });
-    }
-
-    // Generate a JWT token for authentication
-    const token = user.getJwtToken();
-
-    // Respond with a success message, user details, and the token
-    res.status(201).json({
+    return res.status(200).json({
       success: true,
       message: "Login successful!",
-      user,
-      token,
+      token: data.session.access_token,
+      user: {
+        id: data.user.id,
+        email: data.user.email,
+        username: profile?.username,
+        role: profile?.role,
+      },
     });
   } catch (error) {
-    // Handle any server errors
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
 
-// Get Profile API
+// Get Profile
 exports.getProfile = async (req, res) => {
   try {
-    // Fetch the user by ID using the ID from the authenticated request
-    const user = await User.findById(req.user.id);
-    if (!user) {
-      return res.status(400).json({
-        success: false,
-        message: "User not found!",
-      });
+    const { data: profile, error } = await supabase
+      .from("profiles")
+      .select("username, role")
+      .eq("id", req.user.id)
+      .single();
+
+    if (error) {
+      return res.status(500).json({ success: false, message: error.message });
     }
 
-    // Respond with the user details
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
-      message: "User fetched successfully",
-      user,
+      user: {
+        id: req.user.id,
+        email: req.user.email,
+        username: profile?.username,
+        role: profile?.role,
+      },
     });
   } catch (error) {
-    // Handle any server errors
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    return res.status(500).json({ success: false, message: error.message });
   }
 };

@@ -5,7 +5,6 @@ const {
   addLogs,
   getAllLogs,
   updateLogs,
-  getLogsbyId
   // deleteLog,
 } = require("../controllers/log-controller");
 const LogRoutes = express.Router();
