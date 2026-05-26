@@ -1,6 +1,6 @@
 // Import required modules
 const multer = require("multer"); // For handling file uploads
-const uuid = require("uuid").v4; // For generating unique IDs (not currently used in this code)
+
 const path = require("path"); // For handling file paths and extensions
 
 // Configure the storage engine for multer
@@ -8,7 +8,7 @@ const storage = multer.diskStorage({
   // Define the destination folder where uploaded files will be saved
   destination: (req, file, cb) => {
     // The file will be saved in the 'public/uploads' folder
-    cb(null, "public/uploads");
+    cb(null, "assets/images");
   },
 
   // Define the filename for the uploaded file

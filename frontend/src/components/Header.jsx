@@ -3,7 +3,7 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { setLogout } from "../features/auth/authSlice";
 
-const Header = ({ isAuthenticated, user }) => {
+export default function Header({ isAuthenticated, user }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -62,5 +62,3 @@ const Header = ({ isAuthenticated, user }) => {
     </nav>
   );
 };
-
-export default Header;

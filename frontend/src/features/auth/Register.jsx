@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { clearError, register } from "./authSlice";
 
-const Register = () => {
+export default function Register() {
   const { loading, error } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -100,5 +100,3 @@ const Register = () => {
     </div>
   );
 };
-
-export default Register;

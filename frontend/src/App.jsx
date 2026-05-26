@@ -1,17 +1,18 @@
+import "./styles/tailwind.css";
+
 import { useDispatch, useSelector } from "react-redux";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { useEffect } from "react";
 import Header from "./components/Header";
 import ProtectedRoute from "./components/ProtectedRoute";
-import AddLog from "./features/logs/AddLog";
-import Logs from "./features/logs/Logs";
+import TripLogForm from "./features/logs/TripLogForm";
+import TripLogList from "./features/logs/TripLogList";
 import Login from "./features/auth/Login";
 import Register from "./features/auth/Register";
 import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
 import { profile } from "./features/auth/authSlice";
-
 function App() {
   const { isAuthenticated, user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
@@ -34,7 +35,7 @@ function App() {
           path="/add/logs"
           element={
             <ProtectedRoute>
-              <AddLog />
+              <TripLogForm />
             </ProtectedRoute>
           }
         />
@@ -42,7 +43,7 @@ function App() {
           path="/all/logs"
           element={
             <ProtectedRoute>
-              <Logs />
+              <TripLogList />
             </ProtectedRoute>
           }
         />

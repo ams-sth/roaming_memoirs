@@ -11,7 +11,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 app.use(morgan("dev"));
-app.use("/uploads", express.static("public/uploads"));
+app.use("/assets/images", express.static("assets/images"));
 
 app.use("/api/v1", UserRoutes);
 app.use("/api/v1", LogRoutes);

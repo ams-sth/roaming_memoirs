@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { clearError, login } from "./authSlice";
 
-const Login = () => {
+export default function Login() {
   const { loading, error } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -76,5 +76,3 @@ const Login = () => {
     </div>
   );
 };
-
-export default Login;
